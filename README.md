@@ -368,6 +368,3 @@ The final system should allow employees to ask natural language questions and re
 - a traceable source reference
 - a clean chat experience for internal use
 
-## License
-
-Add your preferred license before publishing the project publicly.
