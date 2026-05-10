@@ -1,9 +1,21 @@
 [project]
-name = "ds-rpc-01"
+name = "RAG_WITH_RBAC_CHATBOT"
 version = "0.1.0"
-description = "Starter project for the RPC-01: Internal Chatbot with Role Based Access Control"
+description = "RAG chatbot with role-based access control for secure, permission-aware question answering."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "chromadb>=0.5.23",
     "fastapi[standard]>=0.115.12",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.1",
+    "onnxruntime<1.20",
+    "psycopg2-binary>=2.9.9",
+    "passlib>=1.7.4",
+    "sqlalchemy>=2.0.30",
+    "pytest>=8.2.0",
+    "python-jose[cryptography]>=3.3.0",
+    "python-multipart>=0.0.9",
+    "requests>=2.32.3",
+    "streamlit>=1.44.0",
 ]

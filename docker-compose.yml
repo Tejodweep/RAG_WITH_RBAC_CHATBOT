@@ -1,0 +1,77 @@
+services:
+  chroma:
+    image: chromadb/chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - vectorstore:/data
+    healthcheck:
+      test: ["CMD-SHELL", "bash -lc 'exec 3<>/dev/tcp/127.0.0.1/8000'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: rbac_chatbot
+      POSTGRES_USER: rbac
+      POSTGRES_PASSWORD: rbacpass
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rbac -d rbac_chatbot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      target: api
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://rbac:rbacpass@postgres:5432/rbac_chatbot
+      CHROMA_HOST: chroma
+      CHROMA_PORT: 8000
+      CHROMA_SSL: "false"
+      DOCUMENT_STORE_PATH: /app/resources/document_store
+    ports:
+      - "8000:8000"
+    volumes:
+      - documentstore:/app/resources/document_store
+      - audit:/app/resources/audit
+    depends_on:
+      chroma:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  ui:
+    build:
+      context: .
+      target: ui
+    env_file:
+      - .env
+    environment:
+      API_BASE_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  documentstore:
+  vectorstore:
+  audit:

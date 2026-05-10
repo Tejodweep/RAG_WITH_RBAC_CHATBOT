@@ -8,7 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+rbac_chatbot_env
 .idea/ 
 *.lock
 resources/vectorstore
+resources/document_store
 .env
+resources/audit/
